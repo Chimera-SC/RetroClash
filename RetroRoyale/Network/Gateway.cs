@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
@@ -15,6 +16,7 @@ namespace RetroRoyale.Network
         private readonly Pool<byte[]> _bufferPool = new Pool<byte[]>();
         private readonly Pool<SocketAsyncEventArgs> _eventPool = new Pool<SocketAsyncEventArgs>();
         private readonly Pool<UserToken> _tokenPool = new Pool<UserToken>();
+        private readonly ConcurrentDictionary<SocketAsyncEventArgs, TaskCompletionSource<bool>> _sendTasks = new ConcurrentDictionary<SocketAsyncEventArgs, TaskCompletionSource<bool>>();
 
         public int ConnectedSockets;
 
@@ -210,7 +212,7 @@ namespace RetroRoyale.Network
                 if (player != null)
                     await Resources.PlayerCache.RemovePlayer(player.AccountId, Guid.Empty, true);
 
-                token.Dispose();
+                token.ResetFull();
                 _tokenPool.Push(token);
 
                 Logger.Log("Client disconnected.", Enums.LogType.Debug);
@@ -227,64 +229,86 @@ namespace RetroRoyale.Network
 
         public async Task Send(PiranhaMessage message)
         {
+            var token = message.Device.UserToken;
+
+            await message.Encode();
+            message.Encrypt();
+            Logger.Log($"Message {message.Id} ({message.GetType().Name}) sent.", Enums.LogType.Debug);
+            var buffer = await message.BuildPacket();
+
+            token.SendQueue.Enqueue(buffer);
+            await TryStartSend(token);
+
+            message.Dispose();
+        }
+
+        private async Task TryStartSend(UserToken token)
+        {
+            if (Interlocked.CompareExchange(ref token.IsSending, 1, 0) != 0)
+                return;
+
             try
             {
-                var asyncEvent = GetArgs;
-
-                try
+                while (token.SendQueue.TryDequeue(out var buffer))
                 {
-                    await message.Encode();
+                    var asyncEvent = GetArgs;
 
-                    message.Encrypt();
+                    asyncEvent.SetBuffer(buffer, 0, buffer.Length);
+                    asyncEvent.AcceptSocket = token.Socket;
+                    asyncEvent.RemoteEndPoint = asyncEvent.AcceptSocket.RemoteEndPoint;
+                    asyncEvent.UserToken = token;
 
-                    Logger.Log($"[S] Message {message.Id} ({message.GetType().Name}) sent.");
+                    await StartSend(asyncEvent);
                 }
-                catch (Exception exception)
-                {
-                    Logger.Log(exception, Enums.LogType.Error);
-                }
-
-                asyncEvent.SetBuffer(await message.BuildPacket(), 0, message.Length + 7);
-
-                asyncEvent.AcceptSocket = message.Device.UserToken.Socket;
-                asyncEvent.RemoteEndPoint = asyncEvent.AcceptSocket.RemoteEndPoint;
-                asyncEvent.UserToken = message.Device.UserToken;
-
-                await StartSend(asyncEvent);
-
-                message.Dispose();
             }
-            catch (Exception exception)
+            finally
             {
-                Disconnect(message.Device.UserToken.EventArgs);
-                Logger.Log(exception, Enums.LogType.Error);
+                Interlocked.Exchange(ref token.IsSending, 0);
+                if (!token.SendQueue.IsEmpty)
+                    await TryStartSend(token);
             }
         }
 
         public async Task StartSend(SocketAsyncEventArgs asyncEvent)
         {
             var token = (UserToken) asyncEvent.UserToken;
-            var socket = token.Socket;
+            var socket = token?.Socket;
+
+            if (socket == null)
+            {
+                Recycle(asyncEvent);
+                return;
+            }
+
+            var completionSource = _sendTasks.GetOrAdd(asyncEvent,
+                _ => new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously));
 
             try
             {
-                if (socket != null)
-                    while (true)
-                        if (!socket.SendAsync(asyncEvent))
-                            await ProcessSend(asyncEvent);
-                        else
-                            break;
+                if (!socket.SendAsync(asyncEvent))
+                    await ProcessSend(asyncEvent);
+
+                await completionSource.Task;
             }
-            catch (NullReferenceException)
+            catch (NullReferenceException exception)
             {
-                // only appears in .NET Core
+                if (_sendTasks.TryRemove(asyncEvent, out var source))
+                    source.TrySetException(exception);
+
+                Recycle(asyncEvent);
             }
-            catch (ObjectDisposedException)
+            catch (ObjectDisposedException exception)
             {
+                if (_sendTasks.TryRemove(asyncEvent, out var source))
+                    source.TrySetException(exception);
+
                 Recycle(asyncEvent);
             }
             catch (Exception exception)
             {
+                if (_sendTasks.TryRemove(asyncEvent, out var source))
+                    source.TrySetException(exception);
+
                 Disconnect(asyncEvent);
                 Logger.Log(exception, Enums.LogType.Error);
             }
@@ -295,6 +319,9 @@ namespace RetroRoyale.Network
             var transferred = asyncEvent.BytesTransferred;
             if (transferred == 0 || asyncEvent.SocketError != SocketError.Success)
             {
+                if (_sendTasks.TryRemove(asyncEvent, out var completionSource))
+                    completionSource.TrySetException(new SocketException((int)asyncEvent.SocketError));
+
                 Disconnect(asyncEvent);
                 Recycle(asyncEvent);
             }
@@ -311,11 +338,17 @@ namespace RetroRoyale.Network
                     }
                     else
                     {
+                        if (_sendTasks.TryRemove(asyncEvent, out var completionSource))
+                            completionSource.TrySetResult(true);
+
                         Recycle(asyncEvent);
                     }
                 }
                 catch (Exception exception)
                 {
+                    if (_sendTasks.TryRemove(asyncEvent, out var completionSource))
+                        completionSource.TrySetException(exception);
+
                     Disconnect(asyncEvent);
                     Logger.Log(exception, Enums.LogType.Error);
                 }

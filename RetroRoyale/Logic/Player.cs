@@ -238,101 +238,254 @@ namespace RetroRoyale.Logic
                 await stream.WriteVInt(0); // Is new = 2, 0 = Old
             }
 
+            await stream.WriteVInt(0); // SELECTED DECK
+
             await stream.WriteVInt(0);
+            await stream.WriteVInt(0);
+            await stream.WriteHex("7f");
+
+            await stream.WriteVInt(33);
+            await stream.WriteVInt(0); // CurrentTimestamp
+            await stream.WriteVInt(1);
+            await stream.WriteVInt(0);
+
+            await stream.WriteVInt(1); // EventCount
+            {
+                await stream.WriteVInt(1109); // ID
+                await stream.WriteString("2v2 Button");
+                await stream.WriteVInt(8); // Type
+                await stream.WriteVInt(0); // StartTime
+                await stream.WriteVInt(2147483647); // EndTime
+                await stream.WriteVInt(0); // VisibleOn
+                await stream.WriteVInt(0);
+                await stream.WriteVInt(0);
+                await stream.WriteVInt(0);
+                await stream.WriteVInt(0);
+                await stream.WriteVInt(0);
+                await stream.WriteVInt(0);
+                await stream.WriteVInt(0);
+                await stream.WriteVInt(0);
+                await stream.WriteString("2v2 Button");
+                await stream.WriteString("{\"HideTimer\":false,\"HidePopupTimer\":false}\"");
+            }
+
+            await stream.WriteVInt(0);
+            await stream.WriteVInt(0);
+            await stream.WriteVInt(0);
+            await stream.WriteVInt(0);
+            await stream.WriteVInt(0);
+            await stream.WriteVInt(0);
+            await stream.WriteHex("7f");
+
+            await stream.WriteVInt(0);
+            await stream.WriteVInt(0);
+            await stream.WriteVInt(0);
+
+            await stream.WriteVInt(0); // ChallengeEvents
+
+            await stream.WriteVInt(1); // EventCount
+            {
+                await stream.WriteVInt(1109);
+            }
+
+            await stream.WriteVInt(2); // EventCount
+            {
+                await stream.WriteVInt(2);
+                await stream.WriteString("{\"ID\":\"CARD_RELEASE\",\"Params\":{}})");
+                await stream.WriteVInt(4);
+                await stream.WriteString("{\"ID\":\"CLAN_CHEST\",\"Params\":{}}");
+            }
 
             // CHESTS
-            await stream.WriteVInt(0);
             await stream.WriteVInt(4); // SLOT COUNT
+            {
+                await stream.WriteVInt(0);
+                /*await stream.WriteVInt(1);
+                await stream.WriteVInt(19); // ClassId
+                await stream.WriteVInt(1); // CHEST Type (1 = Wooden Chest, 6 Magical...)
+                await stream.WriteVInt(0); // CHEST READY TO OPEN
+                await stream.WriteVInt(1);
+                await stream.WriteVInt(0);
+                await stream.WriteVInt(0);
+                await stream.WriteVInt(0);*/
+            }
 
-            await stream.WriteVInt(1);
-            await stream.WriteVInt(19); // ClassId
-            await stream.WriteVInt(1); // CHEST Type (1 = Wooden Chest, 6 Magical...)
-            await stream.WriteVInt(0); // CHEST READY TO OPEN
-            await stream.WriteVInt(1);
+            await stream.WriteVInt(0); // FreeChestTimer
             await stream.WriteVInt(0);
             await stream.WriteVInt(0);
             await stream.WriteVInt(0);
-
-            // FREE CHEST
-            await stream.WriteVInt(288000);
-            await stream.WriteVInt(288000);
-            await stream.WriteVInt(1532522384); // Timestamp
-
             await stream.WriteVInt(0);
             await stream.WriteVInt(0);
-            await stream.WriteVInt(127);
-
-            await stream.WriteVInt(0);
-            await stream.WriteVInt(0);
-
-            await stream.WriteVInt(0);
-            await stream.WriteVInt(0);
-            await stream.WriteVInt(0);
-            await stream.WriteVInt(127);
-
-            await stream.WriteVInt(0);
-            await stream.WriteVInt(0);
-            await stream.WriteVInt(0);
-            await stream.WriteVInt(127);
+            await stream.WriteVInt(0); // bool
 
             await stream.WriteVInt(0);
             await stream.WriteVInt(0);
             await stream.WriteVInt(0);
             await stream.WriteVInt(0);
+            await stream.WriteVInt(0);
+            await stream.WriteVInt(0);
+            await stream.WriteVInt(0);
+            await stream.WriteVInt(0);
+            await stream.WriteVInt(0);
 
+            await stream.WriteVInt(0); // CrownChestCount
+            await stream.WriteVInt(0);
+            await stream.WriteVInt(0);
+            await stream.WriteVInt(0);
+
+            await stream.WriteVInt(-1);
+            await stream.WriteVInt(1714640);
+            await stream.WriteVInt(1726960);
+            await stream.WriteVInt(0);
+
+            await stream.WriteVInt(0);
+            await stream.WriteVInt(0);
+            await stream.WriteVInt(0);
+            await stream.WriteVInt(-1);
+
+            await stream.WriteVInt(1); // 1 = SetNamePopup, 2 = Upgrade Card Tutorial, 3 = NameSet
+
+            await stream.WriteVInt(0);
+            await stream.WriteVInt(0);
+            await stream.WriteVInt(0);
             await stream.WriteVInt(0);
             await stream.WriteVInt(0);
             await stream.WriteVInt(0);
             await stream.WriteVInt(0);
 
             await stream.WriteVInt(2);
+            await stream.WriteVInt(12); // Level
+            await stream.WriteVInt(55);
+            await stream.WriteVInt(10); // OldArena
 
-            await stream.WriteVInt(12); // Avatar Level
+            //shop
+            await stream.WriteVInt(1); // ShopDay
+            await stream.WriteVInt(1); // Seed
+            await stream.WriteVInt(1); // DaySeen
 
-            await stream.WriteVInt(54); // Arena ClassId
-            await stream.WriteVInt(8); // Arena InstanceId
-
-            await stream.WriteVInt(1675707269);
-
-            await stream.WriteVInt(3);
-            await stream.WriteVInt(3);
-
-            await stream.WriteVInt(300000); // Shop Refresh Time
-            await stream.WriteVInt(300000); // Shop Refresh Time
-
-            await stream.WriteVInt(686977031);
-
-            await stream.WriteVInt(3); // Shop Cards Count
-
-            await stream.WriteVInt(27);
-            await stream.WriteVInt(2);
+            await stream.WriteVInt(0); // TicksUntilTomorrow
             await stream.WriteVInt(0);
 
-            await stream.WriteVInt(28);
+            await stream.WriteVInt(0);
+
+            await stream.WriteVInt(0); // OfferCount
+
+            await stream.WriteVInt(0); // Special
+
+            for (var i = 0; i < 3; i++) ;
+            {
+                await stream.WriteVInt(0);
+                await stream.WriteVInt(0);
+                await stream.WriteVInt(0);
+            }
+
             await stream.WriteVInt(1);
             await stream.WriteVInt(0);
 
-            await stream.WriteVInt(26);
+            await stream.WriteVInt(1);
+            await stream.WriteVInt(0);
+
+            await stream.WriteVInt(1);
+            await stream.WriteVInt(0);
+
+            await stream.WriteVInt(1);
+            await stream.WriteVInt(0);
+
+            await stream.WriteVInt(0);
+
+            await stream.WriteVInt(0); // CardRequest?
+
+            await stream.WriteVInt(0);
+
+            await stream.WriteVInt(23);
+
+            // Array
+            await stream.WriteVInt(0);
+
+            await stream.WriteVInt(0);
+            await stream.WriteVInt(0);
+            await stream.WriteVInt(0);
+
+            await stream.WriteHex("F807");
+
+            await stream.WriteVInt(1);
+            await stream.WriteVInt(1);
+
+            await stream.WriteVInt(0);
+            await stream.WriteVInt(0);
+            await stream.WriteVInt(0);
+
+            await stream.WriteVInt(11);
+            await stream.WriteVInt(0);
+
+            await stream.WriteVInt(2);
+            await stream.WriteVInt(0);
+            await stream.WriteVInt(0);
+            await stream.WriteVInt(4);
+            await stream.WriteVInt(3);
+            await stream.WriteVInt(17);
+            await stream.WriteVInt(1);
+
+            await stream.WriteVInt(14);
+            await stream.WriteVInt(0);
+            await stream.WriteVInt(0);
+            await stream.WriteVInt(5);
+            await stream.WriteVInt(4);
+            await stream.WriteVInt(14);
+            await stream.WriteVInt(1);
+
+            await stream.WriteVInt(74);
+            await stream.WriteVInt(0);
+            await stream.WriteVInt(0);
+            await stream.WriteVInt(5);
+            await stream.WriteVInt(4);
+            await stream.WriteVInt(1);
+            await stream.WriteVInt(1);
+
+            await stream.WriteVInt(73);
+            await stream.WriteVInt(0);
+            await stream.WriteVInt(0);
+            await stream.WriteVInt(1);
+            await stream.WriteVInt(0);
             await stream.WriteVInt(5);
             await stream.WriteVInt(0);
 
+            await stream.WriteVInt(4);
             await stream.WriteVInt(0);
             await stream.WriteVInt(0);
-            await stream.WriteVInt(127);
+            await stream.WriteVInt(1);
+            await stream.WriteVInt(0);
+            await stream.WriteVInt(9);
+            await stream.WriteVInt(0);
 
+            await stream.WriteVInt(15);
             await stream.WriteVInt(0);
             await stream.WriteVInt(0);
-            await stream.WriteVInt(127);
+            await stream.WriteVInt(1);
+            await stream.WriteVInt(1);
+            await stream.WriteVInt(6);
+            await stream.WriteVInt(2);
 
+            await stream.WriteVInt(16);
+            await stream.WriteVInt(0);
+            await stream.WriteVInt(0);
+            await stream.WriteVInt(1);
+            await stream.WriteVInt(1);
+            await stream.WriteVInt(6);
             await stream.WriteVInt(2);
 
             await stream.WriteVInt(0);
+
+            // Missions
             await stream.WriteVInt(0);
 
-            await stream.WriteVInt(2);
+            await stream.WriteVInt(0);
+            await stream.WriteVInt(0);
+            await stream.WriteVInt(0);
 
-            await stream.WriteVInt(1507);
-            await stream.WriteVInt(12);
+            await stream.WriteVInt(0);
+            await stream.WriteVInt(0);
+            await stream.WriteVInt(0);
 
             await stream.WriteVInt(1);
             await stream.WriteVInt(0);
@@ -340,8 +493,21 @@ namespace RetroRoyale.Logic
             await stream.WriteVInt(0);
             await stream.WriteVInt(0);
             await stream.WriteVInt(0);
+
+            await stream.WriteVInt(0); // NewArenasSeenCount
+
+            await stream.WriteVInt(0); // SessionReward = 2
             await stream.WriteVInt(0);
             await stream.WriteVInt(0);
+            await stream.WriteVInt(0);
+            await stream.WriteVInt(0);
+            await stream.WriteVInt(0);
+            await stream.WriteVInt(0);
+            await stream.WriteVInt(0);
+            await stream.WriteVInt(0);
+            await stream.WriteVInt(0);
+
+            await stream.WriteVInt(7); // TrainingBattlesCompleted
         }
 
         public async Task LogicClientAvatar(MemoryStream stream)
@@ -355,82 +521,144 @@ namespace RetroRoyale.Logic
 
             await stream.WriteString("<c4>" + Name + "</c>"); // Name
             await stream.WriteVInt(1); // NameSetByUser
-            await stream.WriteVInt(0); // NameChangeState
-
-            await stream.WriteVInt(54); // Arena ClassId
-            await stream.WriteVInt(8); // Arena InstanceId
-
-            await stream.WriteVInt(3000); // PrestigeScore
-
-            await stream.WriteVInt(0); // BestAvatarTournamentId
-            await stream.WriteVInt(2); // BestAvatarTournamentRank
-            await stream.WriteVInt(0); // BestAvatarTournamentScore
-            await stream.WriteVInt(0); // LastAvatarTournamentId
-            await stream.WriteVInt(0); // LastAvatarTournamentRank
-            await stream.WriteVInt(0); // LastAvatarTournamentScore
-            await stream.WriteVInt(0); // LastAvatarTournamentPrestigeGained
+            await stream.WriteVInt(10); // Arena
+            await stream.WriteVInt(3000); // Trophies
 
             await stream.WriteVInt(0);
+            await stream.WriteVInt(0);
+            await stream.WriteVInt(0); // LegendaryTrophies
+
+            await stream.WriteVInt(0); // CurrentSeasonTrophies
+            await stream.WriteVInt(0);
+            await stream.WriteVInt(0); // DisplaysNearLeague // maybe never used
+
+            await stream.WriteVInt(0); // BestSeasonTrophies
+            await stream.WriteVInt(0); // Rank
+            await stream.WriteVInt(0); // Trophies
+
+            // League
+            await stream.WriteVInt(0); // CurrentTrophies
+            await stream.WriteVInt(0); // PastTrophies
+            await stream.WriteVInt(1);
+            await stream.WriteVInt(0);
+            await stream.WriteVInt(0); // set this 1 and it appears on the profile
+
+            await stream.WriteVInt(8);
+
+            // Game Variables
+            await stream.WriteVInt(10);
+            await stream.WriteVInt(5);
+            await stream.WriteVInt(0);
+            await stream.WriteVInt(0);
+
+            await stream.WriteVInt(5);
+            await stream.WriteVInt(1);
+            await stream.WriteVInt(500000); // Gold
+
+            await stream.WriteVInt(5);
+            await stream.WriteVInt(3);
+            await stream.WriteVInt(2);
+
+            await stream.WriteVInt(5); // NewCrowns
             await stream.WriteVInt(4);
+            await stream.WriteVInt(0);
+
+            await stream.WriteVInt(5);
+            await stream.WriteVInt(5);
+            await stream.WriteVInt(500000); // Gold
+
+            await stream.WriteVInt(5);
+            await stream.WriteVInt(13);
+            await stream.WriteVInt(0); // NewGold
+
+            await stream.WriteVInt(5);
+            await stream.WriteVInt(14);
+            await stream.WriteVInt(0);
+
+            await stream.WriteVInt(5);
+            await stream.WriteVInt(16);
+            await stream.WriteVInt(51);
+
+            await stream.WriteVInt(5);
+            await stream.WriteVInt(28);
+            await stream.WriteVInt(0);
+
+            await stream.WriteVInt(5);
+            await stream.WriteVInt(29);
+            await stream.WriteVInt(72000006);
+
+            await stream.WriteVInt(0); // CompletedAchievements
+
+            // Achievements
+            await stream.WriteVInt(0); // AchievementCount
+            await stream.WriteVInt(0); // AchievementCount
+
+            // Profile Statistics
             await stream.WriteVInt(6);
-
-            await stream.WriteVInt(3); // Count
+            await stream.WriteVInt(5);
+            await stream.WriteVInt(6);
+            await stream.WriteVInt(30);
 
             await stream.WriteVInt(5);
-            await stream.WriteVInt(1);
-            await stream.WriteVInt(500000);
+            await stream.WriteVInt(7);
+            await stream.WriteVInt(0); // ThreeCrownWinCount
 
-            // CROWN CHEST
-            await stream.WriteVInt(5);
-            await stream.WriteVInt(4);
-            await stream.WriteVInt(0);
-
-            // GOLD
-            await stream.WriteVInt(5);
-            await stream.WriteVInt(5);
-            await stream.WriteVInt(500000);
-
-            await stream.WriteVInt(0);
-
-            await stream.WriteVInt(0); // ACHIEVEMENTS
-
-            await stream.WriteVInt(0); // COUNT
-
-            await stream.WriteVInt(1);
             await stream.WriteVInt(5);
             await stream.WriteVInt(8);
-            await stream.WriteVInt(9);
+            await stream.WriteVInt(5); // CardsFound
 
-            await stream.WriteVInt(0); // COUNT
+            await stream.WriteVInt(5);
+            await stream.WriteVInt(1); // Count
+            await stream.WriteVInt(26000048); // CardID
+
+            await stream.WriteVInt(5);
+            await stream.WriteVInt(11);
+            await stream.WriteVInt(32);
+
+            await stream.WriteVInt(5);
+            await stream.WriteVInt(27);
+            await stream.WriteVInt(1);
+
+            await stream.WriteVInt(0);
+            await stream.WriteVInt(0); // NPC? / Count?
+            await stream.WriteVInt(0);
 
             await stream.WriteVInt(Diamonds); // Diamonds
             await stream.WriteVInt(Diamonds); // FreeDiamonds
 
-            await stream.WriteVInt(0); // ExpPoints
-            await stream.WriteVInt(12); // ExpLevel
+            await stream.WriteVInt(0); // Experience
+            await stream.WriteVInt(12); // Level
 
             await stream.WriteVInt(12); // AvatarUserLevelTier
 
             await stream.WriteVInt(0); // HasAlliance
 
-            /* FOR CLANS:
-            v12(v3, 1);
-            ByteStreamHelper::encodeLogicLong(v3, *((ChecksumEncoder **)v4 + 34), v14);// AllianceId
-            (*(void (__fastcall **)(ByteStreamHelper *, char *))(*(_DWORD *)v3 + 16))(v3, (char *)v4 + 148);// AllianceName
-            ByteStreamHelper::writeDataReference(v3, *((ChecksumEncoder **)v4 + 35), v15); // AllianceBadgeData
-            v16 = *((_DWORD *)v4 + 36);
-            v12 = *(void (__fastcall **)(ByteStreamHelper *, signed int))(*(_DWORD *)v3 + 44);  // Role
-            v13 = v3;
-            */
+            // Battle Statistics
+            await stream.WriteVInt(0); // GamesPlayed
+            await stream.WriteVInt(0); // TournamentMatchesPlayed
+            await stream.WriteVInt(0);
+            await stream.WriteVInt(0); // Wins
+            await stream.WriteVInt(0); // Losses
 
-            await stream.WriteVInt(0); // BattleCount
-            await stream.WriteVInt(0); // WinCount
-            await stream.WriteVInt(0); // LoseCount
+            await stream.WriteVInt(0);
 
-            //await stream.WriteVInt(0); // ???
+            await stream.WriteVInt(7);
 
-            //await stream.WriteVInt(0); // NpcWinCount
-            //await stream.WriteVInt(0); // NpcLoseCount
+            await stream.WriteVInt(0);
+            await stream.WriteVInt(0);
+
+            await stream.WriteVInt(0); // Has Challenge
+            //  await stream.WriteVInt(); // ID
+            //  await stream.WriteVInt(0); // WINS
+            //  await stream.WriteVInt(0); // LOSSES
+
+            await stream.WriteVInt(0);
+            await stream.WriteVInt(0);
+            await stream.WriteVInt(0);
+
+            await stream.WriteVInt(0);
+            await stream.WriteVInt(0); // AccountCreated
+            await stream.WriteVInt(0); // PlayTime
         }
 
         public async Task AvatarRankingEntry(MemoryStream stream)

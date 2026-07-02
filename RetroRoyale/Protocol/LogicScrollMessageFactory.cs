@@ -84,6 +84,8 @@ namespace RetroRoyale.Protocol
                 //{16001, typeof(LogicDeviceLinkMenuClosedMessage)},
                 //{16002, typeof(LogicDeviceLinkEnterCodeMessage)},
                 //{16003, typeof(LogicDeviceLinkConfirmYesMessage)},
+
+                {16103, typeof(AskForTournamentListMessage)},
             };
         }
     }
