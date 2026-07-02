@@ -1,14 +1,19 @@
 # RetroClash
-A .NET Core Clash of Clans Server for the first Android version of coc (2013)
+A .NET Core Clash of Clans 5.2.x (2013) and Clash Royale 1.9.x (2017) server
 
-##### NOTE: This Server has a Facebook implementation and requires a patched app to login into Facebook.
+##### NOTE: The Clash of Clans server has a Facebook implementation and requires a patched app to login into Facebook.
 
 ### Development
 
 Want to contribute? Great!
 Start contributing by making pull-requests.
 
-[Clash of Clans 5.2.4 APK](https://clash-of-clans.en.uptodown.com/android/download/50586)
+[Clash of Clans 5.2.4 APK](https://clash-of-clans.uptodown.com/android/descargar/50586-x)     
+[Clash of Clans 5.2.2 IPA](https://archive.org/download/com.ea.realracing3.inc-ios5.1.1-clutch-2.0.4/iOS%206.1.6%3AiOS%207.0.6/com.supercell.magic-iOS4.3-%28Clutch-2.0.4%29-2.ipa)     
+[Clash Royale 1.9.2 APK](https://www.apkmirror.com/apk/supercell/clash-royale/clash-royale-supercell-1-9-2-release/)     
+[RetroRoyale 1.9.2 APK](https://retroroyale.en.malavida.com/android/download)     
+[Clash Royale 3.377.2 IPA](https://archive.org/download/app-id-44/Clash%20Royale%203.377.2.ipa)     
+[Clash Royale 3.377.3 IPA](https://archive.org/download/app-id-44/Clash%20Royale%203.377.3.ipa)
 
 #### Friendly remind:
 
