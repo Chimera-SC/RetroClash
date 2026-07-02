@@ -121,7 +121,7 @@ namespace RetroClash.Core.Database
             #endregion
         }
 
-        public static async Task<Player> Create()
+        public static async Task<Player> Create(long AccountId, string Token)
         {
             try
             {
@@ -130,6 +130,9 @@ namespace RetroClash.Core.Database
                     return null;
 
                 var player = new Player(id + 1, Utils.GenerateToken);
+
+                AccountId = id;
+                Token = player.PassToken;
 
                 using (var cmd =
                     new MySqlCommand(

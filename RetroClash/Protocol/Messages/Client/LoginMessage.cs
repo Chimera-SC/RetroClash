@@ -65,7 +65,7 @@ namespace RetroClash.Protocol.Messages.Client
                         {
                             if (AccountId == 0)
                             {
-                                Device.Player = await PlayerDb.Create();
+                                Device.Player = await PlayerDb.Create(AccountId, Token);
 
                                 if (Device.Player != null)
                                 {

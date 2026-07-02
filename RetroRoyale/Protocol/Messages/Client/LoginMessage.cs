@@ -74,7 +74,7 @@ namespace RetroRoyale.Protocol.Messages.Client
                         {
                             if (AccountId == 0)
                             {
-                                Device.Player = await PlayerDb.Create();
+                                Device.Player = await PlayerDb.Create(AccountId, PassToken);
 
                                 if (Device.Player != null)
                                 {
