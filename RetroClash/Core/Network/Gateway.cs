@@ -236,6 +236,8 @@ namespace RetroClash.Core.Network
                     await message.Encode();
 
                     message.Encrypt();
+
+                    Logger.Log($"[S] Message {message.Id} ({message.GetType().Name}) sent.");
                 }
                 catch (Exception exception)
                 {
