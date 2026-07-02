@@ -41,7 +41,7 @@ namespace RetroClash.Protocol
                 {14302, typeof(AskForAllianceDataMessage)},
                 {14303, typeof(AskForJoinableAlliancesListMessage)},
                 {14305, typeof(JoinAllianceMessage)},
-                //{14306, typeof(ChangeAllianceMemberRoleMessage)},
+                {14306, typeof(ChangeAllianceMemberRoleMessage)},
                 {14308, typeof(LeaveAllianceMessage)},
                 //{14309, typeof(AskForAllianceUnitDonationsMessage)},
                 //{14310, typeof(DonateAllianceUnitMessage)},

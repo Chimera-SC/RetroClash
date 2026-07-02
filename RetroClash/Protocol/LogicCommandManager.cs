@@ -22,6 +22,7 @@ namespace RetroClash.Protocol
                 {510, typeof(LogicBuyTrapCommand)},
                 //{511, typeof(LogicRequestAllianceUnitsCommand)},
                 {512, typeof(LogicBuyDecoCommand)},
+                {515, typeof(LogicKickAllianceMemberCommand)},
                 {516, typeof(LogicUnitUpgradeCommand)},
                 {517, typeof(LogicSpeedUpUnitUpgradeCommand)},
                 {520, typeof(LogicUnlockBuildingCommand)},
