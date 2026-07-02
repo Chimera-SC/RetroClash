@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Runtime.Serialization;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using RetroClash.Core.Database;
@@ -87,6 +88,17 @@ namespace RetroClash.Logic
 
         [JsonProperty("diamonds")]
         public int Diamonds { get; set; }
+
+        [OnDeserialized]
+        private void OnDeserialized(StreamingContext context)
+        {
+            if (Achievements == null) Achievements = new Achievements();
+            if (HeroManager == null) HeroManager = new LogicHeroManager();
+            if (LogicGameObjectManager == null) LogicGameObjectManager = new LogicGameObjectManager();
+            if (ResourcesManager == null) ResourcesManager = new LogicResourcesManager();
+            if (Stream == null) Stream = new List<AvatarStreamEntry>(20);
+            if (Units == null) Units = new Units();
+        }
 
         public void Dispose()
         {
@@ -345,6 +357,9 @@ namespace RetroClash.Logic
 
         public ReplayProfile GetReplayProfile(bool attacker)
         {
+            if (LogicGameObjectManager == null)
+                LogicGameObjectManager = new LogicGameObjectManager();
+
             var profile = new ReplayProfile
             {
                 Name = Name,

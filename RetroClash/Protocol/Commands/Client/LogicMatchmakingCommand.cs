@@ -24,12 +24,22 @@ namespace RetroClash.Protocol.Commands.Client
             if (Device.Player.Shield.IsShieldActive)
                 Device.Player.Shield.RemoveShield();
 
-            if (enemy != null && Device.State == Enums.State.Battle)
+            if (enemy == null)
+            {
+                await Resources.Gateway.Send(new OutOfSyncMessage(Device));
+                return;
+            }
+
+            if (Device.State == Enums.State.Battle)
             {
                 if (Device.Player.Battle == null)
                     Device.Player.Battle = new PvbBattle(Device.Player);
 
-                Device.Player.Battle.SetDefender(enemy);
+                if (!Device.Player.Battle.SetDefender(enemy))
+                {
+                    await Resources.Gateway.Send(new OutOfSyncMessage(Device));
+                    return;
+                }
             }
         }
     }

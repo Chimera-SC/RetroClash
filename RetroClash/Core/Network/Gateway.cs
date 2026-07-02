@@ -263,11 +263,40 @@ namespace RetroClash.Core.Network
                     var asyncEvent = GetArgs;
 
                     asyncEvent.SetBuffer(buffer, 0, buffer.Length);
-                    asyncEvent.AcceptSocket = token.Socket;
-                    asyncEvent.RemoteEndPoint = asyncEvent.AcceptSocket.RemoteEndPoint;
-                    asyncEvent.UserToken = token;
 
-                    await StartSend(asyncEvent);
+                    var sock = token.Socket;
+                    if (sock == null)
+                    {
+                        Recycle(asyncEvent);
+                        continue;
+                    }
+
+                    try
+                    {
+                        asyncEvent.AcceptSocket = sock;
+                        try
+                        {
+                            asyncEvent.RemoteEndPoint = sock.RemoteEndPoint;
+                        }
+                        catch (ObjectDisposedException)
+                        {
+                            Recycle(asyncEvent);
+                            continue;
+                        }
+
+                        asyncEvent.UserToken = token;
+
+                        await StartSend(asyncEvent);
+                    }
+                    catch (ObjectDisposedException)
+                    {
+                        Recycle(asyncEvent);
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.Log(ex, Enums.LogType.Error);
+                        Recycle(asyncEvent);
+                    }
                 }
             }
             finally

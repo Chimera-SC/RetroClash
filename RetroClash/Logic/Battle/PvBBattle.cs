@@ -33,12 +33,33 @@ namespace RetroClash.Logic.Battle
             Formatting = Formatting.None
         });
 
-        public void SetDefender(Player defender)
+        public bool SetDefender(Player defender)
         {
-            Defender = defender;
-            Replay.Defender = defender.GetReplayProfile(false);
-            Replay.Level = defender.LogicGameObjectManager;
-            Replay.Timestamp = Utils.GetCurrentTimestamp;
+            if (defender == null)
+            {
+                Logger.Log("Attempted to set a null defender in PvbBattle.", Enums.LogType.Warning);
+                return false;
+            }
+
+            if (defender.LogicGameObjectManager == null)
+            {
+                Logger.Log("Defender has null LogicGameObjectManager.", Enums.LogType.Warning);
+                return false;
+            }
+
+            try
+            {
+                Defender = defender;
+                Replay.Defender = defender.GetReplayProfile(false);
+                Replay.Level = defender.LogicGameObjectManager;
+                Replay.Timestamp = Utils.GetCurrentTimestamp;
+                return true;
+            }
+            catch (System.Exception exception)
+            {
+                Logger.Log(exception, Enums.LogType.Error);
+                return false;
+            }
         }
 
         public void RecordCommand(ReplayCommand cmd)
