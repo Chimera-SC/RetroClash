@@ -1,7 +1,7 @@
 # RetroClash
-A .NET Core Clash of Clans Server for the first Android version of coc (2013)
+A .NET Core Clash of Clans 5.2.x (2013) and Clash Royale 1.9.x (2017) server
 
-##### NOTE: This Server has a Facebook implementation and requires a patched app to login into Facebook.
+##### NOTE: The Clash of Clans server has a Facebook implementation and requires a patched app to login into Facebook.
 
 ### Development
 
