@@ -101,7 +101,7 @@ namespace RetroClash.Logic
                             if (buffer.Length - 7 - length >= 7)
                                 await HandleMessage(reader.ReadBytes(buffer.Length - 7 - length));
                             else
-                                UserToken.Reset();
+                                UserToken.ResetStream();
                         }
                         else
                         {
