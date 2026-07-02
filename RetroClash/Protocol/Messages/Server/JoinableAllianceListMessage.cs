@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using System.Threading.Tasks;
+using RetroClash.Core.Database;
 using RetroClash.Logic;
 using RetroGames.Helpers;
 
@@ -15,6 +16,8 @@ namespace RetroClash.Protocol.Messages.Server
         public override async Task Encode()
         {
             var clans = Resources.LeaderboardCache.JoinableClans;
+            if (clans == null || clans.Count == 0)
+                clans = await AllianceDb.GetJoinableAlliances(40) ?? new System.Collections.Generic.List<Alliance>();
 
             var count = 0;
             using (var buffer = new MemoryStream())

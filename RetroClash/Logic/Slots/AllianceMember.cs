@@ -15,8 +15,15 @@ namespace RetroClash.Logic.Slots
             Score = score;
         }
 
-        [JsonProperty("account_id")]
+        [JsonIgnore]
         public LogicLong AccountId { get; set; }
+
+        [JsonProperty("account_id")]
+        public long AccountIdValue
+        {
+            get => AccountId.Long;
+            set => AccountId = new LogicLong(value);
+        }
 
         [JsonProperty("role")]
         public int Role { get; set; }
@@ -36,12 +43,14 @@ namespace RetroClash.Logic.Slots
         public async Task AllianceMemberEntry(MemoryStream stream, int order)
         {
             var player = await Resources.PlayerCache.GetPlayer(AccountId.Long);
+            var name = player?.Name ?? string.Empty;
+            var expLevel = player?.ExpLevel ?? 0;
 
             await AccountId.Encode(stream); // Avatar Id
             await stream.WriteString(null); // FacebookId
-            await stream.WriteString(player.Name); // Name
+            await stream.WriteString(name); // Name
             await stream.WriteInt(Role); // Role
-            await stream.WriteInt(player.ExpLevel); // Exp Level
+            await stream.WriteInt(expLevel); // Exp Level
             await stream.WriteInt(LogicUtils.GetLeagueByScore(Score)); // League Type
             await stream.WriteInt(Score); // Score
             await stream.WriteInt(Donations); // Donations

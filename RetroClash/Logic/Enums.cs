@@ -9,7 +9,8 @@
             JoinedClan = 3,
             Left = 4,
             Promoted = 5,
-            Demoted = 6
+            Demoted = 6,
+            Edited = 10
         }
 
         public enum AllianceType

@@ -147,18 +147,25 @@ namespace RetroClash.Logic
 
                 if (alliance != null)
                 {
-                    stream.WriteBool(true);
-                    await stream.WriteLong(AllianceId); // Alliance Id
-                    await stream.WriteString(alliance.Name); // Alliance Name
-                    await stream.WriteInt(alliance.Badge); // Alliance Badge
-                    await stream.WriteInt(alliance.Members.Find(x => x.AccountId == AccountId)
-                        .Role); // Alliance Role
+                    var member = alliance.Members.Find(x => x.AccountId == AccountId);
+                    if (member != null)
+                    {
+                        stream.WriteBool(true);
+                        await stream.WriteLong(AllianceId); // Alliance Id
+                        await stream.WriteString(alliance.Name); // Alliance Name
+                        await stream.WriteInt(alliance.Badge); // Alliance Badge
+                        await stream.WriteInt(member.Role); // Alliance Role
 
-                    stream.WriteByte(1);
-                    await stream.WriteLong(AllianceId); // Alliance Id
+                        stream.WriteByte(1);
+                        await stream.WriteLong(AllianceId); // Alliance Id
 
-                    stream.WriteByte(1);
-                    await stream.WriteLong(AllianceId); // Alliance Id
+                        stream.WriteByte(1);
+                        await stream.WriteLong(AllianceId); // Alliance Id
+                    }
+                    else
+                    {
+                        stream.WriteBool(false);
+                    }
                 }
                 else
                 {

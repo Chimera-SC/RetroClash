@@ -4,6 +4,8 @@ using System.Threading.Tasks;
 using MySql.Data.MySqlClient;
 using Newtonsoft.Json;
 using RetroClash.Logic;
+using RetroClash.Logic.Slots;
+using RetroClash.Logic.StreamEntry;
 
 namespace RetroClash.Core.Database
 {
@@ -169,6 +171,13 @@ namespace RetroClash.Core.Database
                         while (await reader.ReadAsync())
                         {
                             var alliance = JsonConvert.DeserializeObject<Alliance>((string) reader["Data"], Settings);
+                            if (alliance != null)
+                            {
+                                if (alliance.Members == null)
+                                    alliance.Members = new List<AllianceMember>();
+                                if (alliance.Stream == null)
+                                    alliance.Stream = new List<AllianceStreamEntry>();
+                            }
 
                             list.Add(alliance);
                         }
@@ -197,7 +206,7 @@ namespace RetroClash.Core.Database
                 {
                     await connection.OpenAsync();
 
-                    using (var cmd = new MySqlCommand($"SELECT * FROM clan WHERE IsFull = '0' LIMIT {limit}",
+                    using (var cmd = new MySqlCommand($"SELECT * FROM clan WHERE IsFull = 0 LIMIT {limit}",
                         connection))
                     {
                         var reader = await cmd.ExecuteReaderAsync();
@@ -205,6 +214,13 @@ namespace RetroClash.Core.Database
                         while (await reader.ReadAsync())
                         {
                             var alliance = JsonConvert.DeserializeObject<Alliance>((string) reader["Data"], Settings);
+                            if (alliance != null)
+                            {
+                                if (alliance.Members == null)
+                                    alliance.Members = new List<AllianceMember>();
+                                if (alliance.Stream == null)
+                                    alliance.Stream = new List<AllianceStreamEntry>();
+                            }
 
                             list.Add(alliance);
                         }
@@ -219,6 +235,59 @@ namespace RetroClash.Core.Database
             {
                 Logger.Log(exception, Enums.LogType.Error);
 
+                return list;
+            }
+        }
+
+        public static async Task<List<Alliance>> SearchAlliances(string searchString, bool showOnlyJoinableAlliances, int limit)
+        {
+            var list = new List<Alliance>();
+
+            if (limit <= 0)
+                limit = 40;
+
+            try
+            {
+                using (var connection = new MySqlConnection(_connectionString))
+                {
+                    await connection.OpenAsync();
+
+                    var query = "SELECT * FROM clan WHERE Name LIKE @name";
+                    if (showOnlyJoinableAlliances)
+                        query += " AND IsFull = 0";
+                    query += " ORDER BY Score DESC LIMIT @limit";
+
+                    using (var cmd = new MySqlCommand(query, connection))
+                    {
+                        var pattern = string.IsNullOrEmpty(searchString) ? "%" : $"%{searchString}%";
+                        cmd.Parameters.AddWithValue("@name", pattern);
+                        cmd.Parameters.AddWithValue("@limit", limit);
+
+                        var reader = await cmd.ExecuteReaderAsync();
+
+                        while (await reader.ReadAsync())
+                        {
+                            var alliance = JsonConvert.DeserializeObject<Alliance>((string) reader["Data"], Settings);
+                            if (alliance != null)
+                            {
+                                if (alliance.Members == null)
+                                    alliance.Members = new List<AllianceMember>();
+                                if (alliance.Stream == null)
+                                    alliance.Stream = new List<AllianceStreamEntry>();
+                            }
+
+                            list.Add(alliance);
+                        }
+                    }
+
+                    await connection.CloseAsync();
+                }
+
+                return list;
+            }
+            catch (Exception exception)
+            {
+                Logger.Log(exception, Enums.LogType.Error);
                 return list;
             }
         }
@@ -238,7 +307,16 @@ namespace RetroClash.Core.Database
                         var reader = await cmd.ExecuteReaderAsync();
 
                         while (await reader.ReadAsync())
+                        {
                             alliance = JsonConvert.DeserializeObject<Alliance>((string) reader["Data"], Settings);
+                            if (alliance != null)
+                            {
+                                if (alliance.Members == null)
+                                    alliance.Members = new List<AllianceMember>();
+                                if (alliance.Stream == null)
+                                    alliance.Stream = new List<AllianceStreamEntry>();
+                            }
+                        }
                     }
 
                     await connection.CloseAsync();
@@ -288,7 +366,7 @@ namespace RetroClash.Core.Database
                     await ExecuteAsync(cmd);
 
                     if (Redis.IsConnected)
-                        await Redis.UncachePlayer(id);
+                        await Redis.UncacheAlliance(id);
                 }
             }
             catch (Exception exception)

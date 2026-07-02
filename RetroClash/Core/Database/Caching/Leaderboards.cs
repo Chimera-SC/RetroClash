@@ -27,6 +27,7 @@ namespace RetroClash.Core.Database.Caching
         {
             _timer.Elapsed += TimerCallback;
             _timer.Start();
+            TimerCallback(null, null);
 
             foreach (var locales in Csv.Tables.Get(Enums.Gamefile.Locales).GetDatas())
                 LocalPlayers.Add(((Locales) locales).Name, new List<Player>(200));
@@ -55,7 +56,7 @@ namespace RetroClash.Core.Database.Caching
 
                     var currentJoinableClans = await AllianceDb.GetJoinableAlliances(40);
                     for (var i = 0; i < currentJoinableClans.Count; i++)
-                        JoinableClans.UpdateOrInsert(i, JoinableClans[i]);
+                        JoinableClans.UpdateOrInsert(i, currentJoinableClans[i]);
                 }
                 catch (Exception exception)
                 {

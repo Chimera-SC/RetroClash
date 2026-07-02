@@ -60,10 +60,15 @@ namespace RetroClash.Core.Database
         {
             try
             {
+                if (player == null)
+                    return;
+
                 await _playerProfiles.StringSetAsync(player.AccountId.ToString(),
                     JsonConvert.SerializeObject(player, Settings), TimeSpan.FromHours(4));
-                await _playerObjects.StringSetAsync(player.AccountId.ToString(), player.LogicGameObjectManager.Json,
-                    TimeSpan.FromHours(4));
+
+                if (player.LogicGameObjectManager != null)
+                    await _playerObjects.StringSetAsync(player.AccountId.ToString(), player.LogicGameObjectManager.Json,
+                        TimeSpan.FromHours(4));
             }
             catch (Exception exception)
             {
@@ -97,26 +102,38 @@ namespace RetroClash.Core.Database
             }
         }
 
+        public static async Task UncacheAlliance(long id)
+        {
+            try
+            {
+                await _alliances.KeyDeleteAsync(id.ToString());
+            }
+            catch (Exception exception)
+            {
+                Logger.Log(exception, Enums.LogType.Error);
+            }
+        }
+
         public static async Task<Player> GetCachedPlayer(long id)
         {
             try
             {
-                var player =
-                    JsonConvert.DeserializeObject<Player>(await _playerProfiles.StringGetAsync(id.ToString()),
-                        Settings);
+                var json = await _playerProfiles.StringGetAsync(id.ToString());
+                if (string.IsNullOrEmpty(json))
+                    return null;
+
+                var player = JsonConvert.DeserializeObject<Player>(json, Settings);
+                if (player == null)
+                    return null;
 
                 var objects = await _playerObjects.StringGetAsync(id.ToString());
-
                 if (!string.IsNullOrEmpty(objects))
                 {
                     player.LogicGameObjectManager =
                         JsonConvert.DeserializeObject<LogicGameObjectManager>(objects, Settings);
-                    return player;
                 }
 
-                var avatar = await PlayerDb.Get(id);
-                await CachePlayer(avatar);
-                return avatar;
+                return player;
             }
             catch (Exception exception)
             {
@@ -135,7 +152,11 @@ namespace RetroClash.Core.Database
         {
             try
             {
-                return JsonConvert.DeserializeObject<Alliance>(await _alliances.StringGetAsync(id.ToString()));
+                var json = await _alliances.StringGetAsync(id.ToString());
+                if (string.IsNullOrEmpty(json))
+                    return null;
+
+                return JsonConvert.DeserializeObject<Alliance>(json, Settings);
             }
             catch (Exception exception)
             {

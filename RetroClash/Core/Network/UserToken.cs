@@ -56,6 +56,9 @@ namespace RetroClash.Core.Network
 
         public async Task SetData()
         {
+            if (Stream == null || EventArgs == null || EventArgs.Buffer == null || EventArgs.BytesTransferred <= 0)
+                return;
+
             await Stream.WriteAsync(EventArgs.Buffer, 0, EventArgs.BytesTransferred);
         }
 

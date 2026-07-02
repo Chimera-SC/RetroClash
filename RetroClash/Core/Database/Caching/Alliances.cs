@@ -24,6 +24,9 @@ namespace RetroClash.Core.Database.Caching
         {
             try
             {
+                if (alliance == null)
+                    return false;
+
                 if (ContainsKey(alliance.Id))
                     return true;
 
@@ -47,14 +50,16 @@ namespace RetroClash.Core.Database.Caching
                 return value;
             }
 
-            Alliance alliance;
+            Alliance alliance = null;
 
             if (Redis.IsConnected)
                 alliance = await Redis.GetCachedAlliance(id);
-            else
+
+            if (alliance == null)
                 alliance = await AllianceDb.Get(id);
 
-            AddAlliance(alliance);
+            if (alliance != null)
+                AddAlliance(alliance);
 
             return alliance;
         }

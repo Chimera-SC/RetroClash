@@ -1,5 +1,8 @@
 ﻿using System.Threading.Tasks;
+using RetroClash.Core.Database;
 using RetroClash.Logic;
+using RetroClash.Logic.Slots;
+using RetroClash.Protocol.Commands.Server;
 using RetroClash.Protocol.Messages.Server;
 using RetroGames.Helpers;
 
@@ -28,7 +31,7 @@ namespace RetroClash.Protocol.Messages.Client
 
         public override async Task Process()
         {
-            /*var alliance = await MySQL.CreateAlliance();
+            var alliance = await AllianceDb.Create();
 
             if (alliance != null)
             {
@@ -40,6 +43,9 @@ namespace RetroClash.Protocol.Messages.Client
 
                 alliance.Members.Add(
                     new AllianceMember(Device.Player.AccountId, Enums.Role.Leader, Device.Player.Score));
+
+                await AllianceDb.Save(alliance);
+                Resources.AllianceCache.AddAlliance(alliance);
 
                 await Resources.Gateway.Send(new AvailableServerCommandMessage(Device)
                 {
@@ -53,13 +59,13 @@ namespace RetroClash.Protocol.Messages.Client
                 });
 
                 Device.Player.AllianceId = alliance.Id;
-
-                await MySQL.SaveAlliance(alliance);
+                await PlayerDb.Save(Device.Player);
+                await Device.Player.Update();
             }
             else
-            {*/
-            await Resources.Gateway.Send(new AllianceCreateFailedMessage(Device));
-            //}
+            {
+                await Resources.Gateway.Send(new AllianceCreateFailedMessage(Device));
+            }
         }
     }
 }

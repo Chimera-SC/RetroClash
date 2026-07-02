@@ -6,6 +6,7 @@ using RetroClash.Logic.StreamEntry.Alliance;
 using RetroClash.Protocol.Commands.Server;
 using RetroClash.Protocol.Messages.Server;
 using RetroGames.Helpers;
+using RetroClash.Core.Database;
 
 namespace RetroClash.Protocol.Messages.Client
 {
@@ -31,6 +32,9 @@ namespace RetroClash.Protocol.Messages.Client
                 {
                     alliance.Members.Add(new AllianceMember(Device.Player.AccountId, Enums.Role.Member,
                         Device.Player.Score));
+
+                    await AllianceDb.Save(alliance);
+                    Resources.AllianceCache.AddAlliance(alliance);
 
                     await Resources.Gateway.Send(new AvailableServerCommandMessage(Device)
                     {
@@ -74,6 +78,8 @@ namespace RetroClash.Protocol.Messages.Client
                     }
 
                     Device.Player.AllianceId = AllianceId;
+                    await PlayerDb.Save(Device.Player);
+                    await Device.Player.Update();
                 }
                 else
                 {

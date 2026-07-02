@@ -52,12 +52,12 @@ namespace RetroClash.Logic
         public int RequiredScore { get; set; }
 
         [JsonProperty("score")]
-        public int Score => Members.Sum(m => m.Score) / 2;
+        public int Score => Members?.Where(m => m != null).Sum(m => m.Score) / 2 ?? 0;
 
         public async Task AllianceRankingEntry(MemoryStream stream)
         {
             await stream.WriteInt(Badge); // Badge
-            await stream.WriteInt(Members.Count); // Member Count
+            await stream.WriteInt(Members?.Count ?? 0); // Member Count
         }
 
         public async Task AllianceFullEntry(MemoryStream stream)
@@ -66,10 +66,14 @@ namespace RetroClash.Logic
 
             await stream.WriteString(Description); // Description
 
-            await stream.WriteInt(Members.Count); // Member Count
+            await stream.WriteInt(Members?.Count ?? 0); // Member Count
 
-            for (var i = 1; i < Members.Count + 1; i++)
-                await Members[i].AllianceMemberEntry(stream, i);
+            if (Members != null)
+            {
+                for (var i = 0; i < Members.Count; i++)
+                    if (Members[i] != null)
+                        await Members[i].AllianceMemberEntry(stream, i + 1);
+            }
         }
 
         public async Task AllianceHeaderEntry(MemoryStream stream)
@@ -93,7 +97,10 @@ namespace RetroClash.Logic
 
         public int GetRole(LogicLong id)
         {
-            var index = Members.FindIndex(x => x.AccountId == id);
+            if (Members == null)
+                return 1;
+
+            var index = Members.FindIndex(x => x != null && x.AccountId == id);
 
             return index > -1 ? Members[index].Role : 1;
         }
@@ -101,6 +108,19 @@ namespace RetroClash.Logic
         public bool IsMember(long id)
         {
             return Members.FindIndex(x => x.AccountId == id) != -1;
+        }
+
+        public AllianceMember PromoteNextLeader()
+        {
+            if (Members.Count == 0)
+                return null;
+
+            var nextLeader = Members.OrderByDescending(x => x.Role).FirstOrDefault();
+            if (nextLeader == null)
+                return null;
+
+            nextLeader.Role = (int) Enums.Role.Leader;
+            return nextLeader;
         }
 
         public async void SaveCallback(object state, ElapsedEventArgs args)

@@ -15,6 +15,8 @@ namespace RetroClash.Protocol.Messages.Server
         public override async Task Encode()
         {
             var alliance = await Resources.AllianceCache.GetAlliance(AllianceId);
+            if (alliance == null)
+                return;
 
             await alliance.AllianceFullEntry(Stream);
         }

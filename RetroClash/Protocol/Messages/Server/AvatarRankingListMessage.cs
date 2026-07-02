@@ -15,22 +15,33 @@ namespace RetroClash.Protocol.Messages.Server
         public override async Task Encode()
         {
             var count = 0;
+            var players = Resources.LeaderboardCache?.GlobalPlayers;
 
             using (var buffer = new MemoryStream())
             {
-                foreach (var player in Resources.LeaderboardCache.GlobalPlayers)
+                if (players != null)
                 {
-                    if (player == null) continue;
-                    await buffer.WriteLong(player.AccountId);
-                    await buffer.WriteString(player.Name);
+                    foreach (var player in players)
+                    {
+                        if (player == null) continue;
 
-                    await buffer.WriteInt(count + 1);
-                    await buffer.WriteInt(player.Score);
-                    await buffer.WriteInt(200);
+                        try
+                        {
+                            await buffer.WriteLong(player.AccountId);
+                            await buffer.WriteString(player.Name);
 
-                    await player.AvatarRankingEntry(buffer);
+                            await buffer.WriteInt(count + 1);
+                            await buffer.WriteInt(player.Score);
+                            await buffer.WriteInt(200);
 
-                    count++;
+                            await player.AvatarRankingEntry(buffer);
+
+                            count++;
+                        }
+                        catch
+                        {
+                        }
+                    }
                 }
 
                 await Stream.WriteInt(count);

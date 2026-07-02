@@ -121,6 +121,8 @@ namespace RetroClash.Protocol.Messages.Client
                                             if (!alliance.IsMember(AccountId))
                                             {
                                                 Device.Player.AllianceId = 0;
+                                                await PlayerDb.Save(Device.Player);
+                                                await Device.Player.Update();
 
                                                 await Resources.Gateway.Send(new OwnHomeDataMessage(Device));
 

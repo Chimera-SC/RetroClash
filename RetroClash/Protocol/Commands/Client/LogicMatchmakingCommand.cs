@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using RetroClash.Logic;
 using RetroClash.Logic.Battle;
 using RetroClash.Protocol.Messages.Server;
@@ -16,10 +17,19 @@ namespace RetroClash.Protocol.Commands.Client
         {
             var enemy = await Resources.PlayerCache.Random();
 
-            await Resources.Gateway.Send(new EnemyHomeDataMessage(Device)
+            try
             {
-                Enemy = enemy
-            });
+                await Resources.Gateway.Send(new EnemyHomeDataMessage(Device)
+                {
+                    Enemy = enemy
+                });
+            }
+            catch (Exception exception)
+            {
+                Logger.Log(exception, Enums.LogType.Error);
+                await Resources.Gateway.Send(new OutOfSyncMessage(Device));
+                return;
+            }
 
             if (Device.Player.Shield.IsShieldActive)
                 Device.Player.Shield.RemoveShield();

@@ -18,19 +18,23 @@ namespace RetroClash.Protocol.Messages.Server
 
             using (var buffer = new MemoryStream())
             {
-                foreach (var alliance in Resources.LeaderboardCache.GlobalAlliances)
+                var alliances = Resources.LeaderboardCache?.GlobalAlliances;
+                if (alliances != null)
                 {
-                    if (alliance == null) continue;
-                    await buffer.WriteLong(alliance.Id);
-                    await buffer.WriteString(alliance.Name);
-                    await buffer.WriteInt(count + 1);
-                    await buffer.WriteInt(alliance.Score);
-                    await buffer.WriteInt(200);
+                    foreach (var alliance in alliances)
+                    {
+                        if (alliance == null) continue;
+                        await buffer.WriteLong(alliance.Id);
+                        await buffer.WriteString(alliance.Name);
+                        await buffer.WriteInt(count + 1);
+                        await buffer.WriteInt(alliance.Score);
+                        await buffer.WriteInt(200);
 
-                    await alliance.AllianceRankingEntry(buffer);
+                        await alliance.AllianceRankingEntry(buffer);
 
-                    if (count++ >= 199)
-                        break;
+                        if (count++ >= 199)
+                            break;
+                    }
                 }
 
                 await Stream.WriteInt(count);

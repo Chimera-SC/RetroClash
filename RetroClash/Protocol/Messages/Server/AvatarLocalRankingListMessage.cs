@@ -14,34 +14,40 @@ namespace RetroClash.Protocol.Messages.Server
 
         public override async Task Encode()
         {
-            if (Resources.LeaderboardCache.LocalPlayers.ContainsKey(Device.Player.Language))
-            {
-                var count = 0;
+            var count = 0;
+            var players = Resources.LeaderboardCache?.LocalPlayers;
+            var language = Device?.Player?.Language;
 
-                using (var buffer = new MemoryStream())
+            using (var buffer = new MemoryStream())
+            {
+                if (!string.IsNullOrEmpty(language) && players != null && players.ContainsKey(language))
                 {
-                    foreach (var player in Resources.LeaderboardCache.LocalPlayers[Device.Player.Language])
+                    foreach (var player in players[language])
                     {
                         if (player == null) continue;
-                        await buffer.WriteLong(player.AccountId);
-                        await buffer.WriteString(player.Name);
 
-                        await buffer.WriteInt(count + 1);
-                        await buffer.WriteInt(player.Score);
-                        await buffer.WriteInt(200);
+                        try
+                        {
+                            await buffer.WriteLong(player.AccountId);
+                            await buffer.WriteString(player.Name);
 
-                        await player.AvatarRankingEntry(buffer);
+                            await buffer.WriteInt(count + 1);
+                            await buffer.WriteInt(player.Score);
+                            await buffer.WriteInt(200);
 
-                        count++;
+                            await player.AvatarRankingEntry(buffer);
+
+                            count++;
+                        }
+                        catch
+                        {
+                            // Skip malformed local player entries without crashing the ranking message.
+                        }
                     }
-
-                    await Stream.WriteInt(count);
-                    await Stream.WriteBuffer(buffer.ToArray());
                 }
-            }
-            else
-            {
-                await Stream.WriteInt(0);
+
+                await Stream.WriteInt(count);
+                await Stream.WriteBuffer(buffer.ToArray());
             }
         }
     }

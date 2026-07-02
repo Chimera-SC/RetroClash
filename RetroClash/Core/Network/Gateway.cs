@@ -157,13 +157,19 @@ namespace RetroClash.Core.Network
             }
             else
             {
-                var token = (UserToken) asyncEvent.UserToken;
+                var token = asyncEvent.UserToken as UserToken;
+                if (token == null || token.EventArgs == null || token.Stream == null || token.Socket == null)
+                {
+                    Disconnect(asyncEvent);
+                    Recycle(asyncEvent);
+                    return;
+                }
 
                 await token.SetData();
 
                 try
                 {
-                    if (token.Socket.Available == 0)
+                    if (token.Socket.Available == 0 && token.Device != null)
                         await token.Device.HandleMessage(token.Stream.ToArray());
                 }
                 catch (Exception exception)
